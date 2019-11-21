@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:security="http://www.springframework.org/schema/security"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-4.2.xsd">
+	
+	<!--  
+		1단계 : Security가 제공하는 디폴트 페이지사용
+		
+		intercept-url : 감시해야할 url과 접근가능한 권한을
+			정의한다. 즉 권한이 없다면 해당 요청까지 들어가지
+			못하고 중간에 인터셉트 된다. 
+		pattern : 권한을 적용할 요청명
+		access : 접근권한설정
+			-hasRole('권한명') : 해당 권한만 접근가능함
+			-hasAnyRole('권한명1, 권한명2,....) : 여러권한중
+				1개만 획득하면 접근가능함
+			-permitAll : 권한없이 누구나 접근가능함
+		
+		form-login : 로그인 페이지에 대한 요소지정. 1단계
+			에서는 디폴트 페이지 사용함. 
+		logout : 로그아웃 페이지의 요소지정. 1단계에서는
+			디폴트 사용함.	
+	-->
+	<security:http>
+		<security:intercept-url pattern="/security1/**"
+			access="hasRole('USER')" />
+		<security:intercept-url pattern="/**"
+			access="permitAll" />
+			
+		<security:form-login />
+		<security:logout/>
+	</security:http>
+	<security:authentication-manager>
+		<security:authentication-provider>
+			<security:user-service>
+				<security:user name="kosmo" password="1234"
+					authorities="ROLE_USER"/>
+			</security:user-service>			
+		</security:authentication-provider>
+	</security:authentication-manager>
+
+
+
+
+
+
+
+</beans>
+

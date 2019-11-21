@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:security="http://www.springframework.org/schema/security"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-4.2.xsd">
+	
+	
+	<!-- 
+	3단계 : JDBC 이용하여 테이블에 저장된 회원정보 연동하기
+	
+	jdbc-user-service 
+		data-source-ref : 데이터베이스 연결을 나타내는 
+			dataSource로 해당 연결은 반드시 root-context.xml
+			에서 해야한다. (servlet-context.xml에서 연결할수
+			없음)
+		role-prefix : "ROLE_"와 같은 권한명 앞에 붙는 접두어
+			(prefix)를 지정한다. 만약 해당 항목을 "ROLE_"로 
+			지정한다면 테이블에서는 "USER"와 같이 접두어를 
+			제거한 상태로 권한명을 입력해야 한다. 
+		users-by-username-query : 아이디를 이용하여 사용자
+			정보를 가져오는 쿼리문을 작성한다. 
+		authorities-by-username-query : 아이디를 이용하여
+			권한정보를 가져오는 쿼리문을 작성한다. 
+	 -->
+	<security:http>	 			
+	 	<security:intercept-url 
+			pattern="/security2/login.do" 
+			access="permitAll" />
+		<security:intercept-url 
+			pattern="/security2/admin/**" 
+			access="hasRole('ADMIN')"/>
+		<security:intercept-url 
+			pattern="/security2/**" 
+			access="hasAnyRole('USER, ADMIN')"/>
+		<security:intercept-url pattern="/**" 
+			access="permitAll"/>
+			
+		<security:form-login 
+			login-page="/security2/login.do"
+			default-target-url="/security2/index.do"
+			authentication-failure-url="/security2/login.do?error"
+			username-parameter="id"  
+			password-parameter="pass" 
+			/>			
+		<security:logout 
+			logout-url="/security2/logout"
+			logout-success-url="/security2/index.do"/>
+		<security:access-denied-handler 
+			error-page="/security2/accessDenied.do" />
+	</security:http>
+	<security:authentication-manager>
+		<security:authentication-provider>
+			<security:jdbc-user-service 
+				data-source-ref="dataSource"
+				role-prefix=""
+				users-by-username-query="SELECT
+					user_id, user_pw, enabled 
+					FROM security_admin WHERE user_id=?"
+				authorities-by-username-query="SELECT
+					user_id, authority 
+					FROM security_admin WHERE user_id=?"
+			/>
+		</security:authentication-provider>
+	</security:authentication-manager> 
+
+</beans>
+

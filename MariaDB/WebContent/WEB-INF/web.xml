@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://xmlns.jcp.org/xml/ns/javaee" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd" id="WebApp_ID" version="3.1">
+  <display-name>K09MariaDB</display-name>
+  
+  <context-param>
+  	<param-name>MariaJDBCDriver</param-name>
+  	<param-value>org.mariadb.jdbc.Driver</param-value>
+  </context-param>
+  <context-param>
+  	<param-name>MariaConnectURL</param-name>
+  	<param-value>jdbc:mariadb://127.0.0.1:3306/kosmo_db</param-value>
+  </context-param>
+  
+  <context-param>
+  	<param-name>PAGE_SIZE</param-name>
+  	<param-value>2</param-value>
+  </context-param>
+  <context-param>
+  
+  	<param-name>BLOCK_PAGE</param-name>
+  	<param-value>2</param-value>
+  </context-param>
+  <context-param>
+  
+  	<param-name>INIT_PARAM</param-name>
+  	<param-value>컨텍스트초기화파라미터</param-value>
+  </context-param>
+  
+  <welcome-file-list>
+    <welcome-file>index.html</welcome-file>
+    <welcome-file>index.htm</welcome-file>
+    <welcome-file>index.jsp</welcome-file>
+    <welcome-file>default.html</welcome-file>
+    <welcome-file>default.htm</welcome-file>
+    <welcome-file>default.jsp</welcome-file>
+  </welcome-file-list>
+</web-app>

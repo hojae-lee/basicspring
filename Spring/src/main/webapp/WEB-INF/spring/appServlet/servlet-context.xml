@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/mvc"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xmlns:beans="http://www.springframework.org/schema/beans"
+   xmlns:context="http://www.springframework.org/schema/context"
+   xsi:schemaLocation="http://www.springframework.org/schema/mvc https://www.springframework.org/schema/mvc/spring-mvc.xsd
+      http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd
+      http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd">
+
+   <!-- DispatcherServlet Context: defines this servlet's request-processing infrastructure -->
+   
+   <!-- Enables the Spring MVC @Controller programming model -->
+   <annotation-driven />
+
+   <!-- Handles HTTP GET requests for /resources/** by efficiently serving up static resources in the ${webappRoot}/resources directory -->
+   <resources mapping="/resources/**" location="/resources/" />
+   <resources mapping="/images/**" location="/resources/" />
+
+
+   <!-- 
+   컨트롤로에서 비지니스로직을 수행한후 View의 경로를
+   반환하면 ViewResolver가 해당 뷰의 경로를 조립한다.
+   [prefix]                     [suffix]
+   /WEB-INF/views/+ 컨트롤러 반환값 + .jsp
+   위와 같이 조립한후 웹브라우저에 해당 View를 로드한다.
+   컨트롤러는 View를 호출하기 전 출력할 내용을 Model에
+   저장한다.
+   
+    -->
+   <!-- Resolves views selected for rendering by @Controllers to .jsp resources in the /WEB-INF/views directory -->
+   <beans:bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+      <beans:property name="prefix" value="/WEB-INF/views/" />
+      <beans:property name="suffix" value=".jsp" />
+   </beans:bean>
+   
+   <!-- 
+   SpringMVC로 요청이 들어오면 제일먼저 DispatcherServlet이
+   요청을 받는다. 그리고 아래설정된 기본패키지를 검색(scan)
+   한후 @Controller 어노테이션이 설정된 클래스를 찾아서
+   요청명에 해당하는 메소드를 실행한다.
+    -->
+   
+   <context:component-scan base-package="com.kosmo.k11spring" />
+   
+   <!-- 최초 요청을 받았을떄 컨트롤러를 찾기 위해 스캔하는
+   패키지를 하나 더 추가한다. 게시판은 아래 패키지에서 작성됨. -->
+   <context:component-scan base-package="springboard.controller" />
+   
+   
+   
+   
+   
+   
+   
+   
+   <!-- 파일업로드 빈 생성 -->
+     <beans:bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+      <beans:property name="maxUploadSize" value="1000000"/>
+   </beans:bean>
+   <!-- 파일다운로드 빈생성 -->
+   <beans:bean id="fileDownloadView" class="common.FileDownloadView"/>
+   
+   <beans:bean id="fileViewResolver" class="org.springframework.web.servlet.view.BeanNameViewResolver">
+         <beans:property name="order" value="0"/>
+   </beans:bean>
+   
+   <!-- SPRING JDBC를 사용하기 위한 빈 생성. 해당
+   XML파일에서 JDBC연결에 대한 빈을 생성한후 컨트롤러에서
+   자동주입(injection) 받아서 사용한다 -->
+   
+   <!-- 
+   		트랜잭션 처리를 위한 빈생성
+   		
+   		1.트랜잭션 매니저를 이용한 처리
+   		
+   		dataSource : DB연결에 대한 빈생성
+   		template : dataSource를 기반으로 생성한 JdbcTemplate타입의 빈
+   		transactionManager : dataSource를 기반으로 생성한
+   		DataSourceTransactionManager 타입의 빈
+   		transactionDAO : template 빈 , treansactionManager 빈을 기반으로 생성된
+   		DAO 타입의 빈
+    -->
+    <!-- <beans:bean name="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+      <beans:property name="driverClassName" value="oracle.jdbc.OracleDriver"/>
+      <beans:property name="url" value="jdbc:oracle:thin:@localhost:1521:orcl"/>
+      <beans:property name="username" value="kosmo"/>
+      <beans:property name="password" value="1234"/>
+   </beans:bean>
+   
+   <beans:bean name="template" class="org.springframework.jdbc.core.JdbcTemplate">
+      <beans:property name="dataSource" ref="dataSource"/>
+   </beans:bean>
+   
+   
+   <beans:bean name="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+      <beans:property name="dataSource" ref="dataSource"/>
+   </beans:bean>
+   
+   <beans:bean name="transactionDAO" class="transaction.TicketDAO">
+      <beans:property name="template" ref="template"/>
+      <beans:property name="transactionManager" ref="transactionManager"/>
+   </beans:bean> -->
+   
+   <!-- 
+   		2. 트랜잭션 템플릿을 이용한 처리
+   		
+    -->
+   <beans:bean name="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+      <beans:property name="driverClassName" value="oracle.jdbc.OracleDriver"/>
+      <beans:property name="url" value="jdbc:oracle:thin:@localhost:1521:orcl"/>
+      <beans:property name="username" value="kosmo"/>
+      <beans:property name="password" value="1234"/>
+   </beans:bean>
+   
+   <beans:bean name="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+      <beans:property name="dataSource" ref="dataSource"/>
+   </beans:bean>
+   
+   <beans:bean name="transactionTemplate" class="org.springframework.transaction.support.TransactionTemplate">
+   		<beans:property name="transactionManager" ref="transactionManager" />   		
+   </beans:bean>
+   
+   <beans:bean name="template" class="org.springframework.jdbc.core.JdbcTemplate">
+      <beans:property name="dataSource" ref="dataSource"/>
+   </beans:bean>
+    
+   <beans:bean name="TransactionDAO" class="transaction.TicketTplDAO">
+   		<beans:property name="template" ref ="template" />
+   		<beans:property name="transactionTemplate" ref ="transactionTemplate" />
+   </beans:bean>
+   
+   <!-- Mybatis 빈 생성 -->
+   	<beans:bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+   		<beans:property name="dataSource" ref="dataSource" />
+   		<beans:property name="mapperLocations" value="classpath:mybatis/mapper/*.xml" />
+   	</beans:bean>
+   	<beans:bean id="sqlSession" class="org.mybatis.spring.SqlSessionTemplate">
+   		<beans:constructor-arg index="0" ref="sqlSessionFactory" />   		
+   	</beans:bean>
+   
+</beans:beans>
